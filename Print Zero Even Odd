@@ -1,0 +1,51 @@
+https://leetcode.com/problems/print-zero-even-odd/description/
+
+class ZeroEvenOdd {
+    private int n;
+    private boolean zero,odd,even;
+    
+    public ZeroEvenOdd(int n) {
+        this.n = n;
+       this.zero=true;
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer.
+    public synchronized void zero(IntConsumer printNumber) throws InterruptedException {
+        for(int i=1;i<=n;i++)
+        {
+            while(zero==false)
+                wait();
+            printNumber.accept(0);
+            zero=false;
+            if(i%2==1)
+                odd=true;
+            if(i%2==0)
+                even=true;
+            notifyAll();
+        }
+    }
+
+    public synchronized void even(IntConsumer printNumber) throws InterruptedException {
+        for(int i=2;i<=n;i=i+2)
+        {
+            while(even==false)
+                wait();
+            printNumber.accept(i);
+            zero=true;
+            even=false;
+            notifyAll();
+        }
+    }
+
+    public synchronized void odd(IntConsumer printNumber) throws InterruptedException {
+        for(int i=1;i<=n;i=i+2)
+        {
+            while(odd==false)
+                wait();
+            printNumber.accept(i);
+            odd=false;
+            zero=true;
+            notifyAll();
+        }
+    }
+}
