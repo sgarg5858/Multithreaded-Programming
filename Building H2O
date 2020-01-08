@@ -1,0 +1,28 @@
+https://leetcode.com/problems/building-h2o/description/
+
+class H2O {
+    int counter=1;
+    public H2O() {
+        
+    }
+
+    public synchronized void hydrogen(Runnable releaseHydrogen) throws InterruptedException {
+       
+            while(counter%3==0)
+                wait();
+            // releaseHydrogen.run() outputs "H". Do not change or remove this line.
+            releaseHydrogen.run();
+            counter++;
+            notifyAll();
+    }
+
+    public synchronized void oxygen(Runnable releaseOxygen) throws InterruptedException {
+        
+        while(counter%3!=0)
+            wait();
+        // releaseOxygen.run() outputs "O". Do not change or remove this line.
+		releaseOxygen.run();
+        counter++;
+        notifyAll();
+    }
+}
