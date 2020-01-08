@@ -1,0 +1,75 @@
+https://leetcode.com/problems/fizz-buzz-multithreaded/description/
+
+class FizzBuzz {
+    private int n;
+    int flag=0;
+    int counter;
+    
+    public FizzBuzz(int n) {
+        this.n = n;
+        this.flag=0;
+        this.counter=1;
+    }
+
+    // printFizz.run() outputs "fizz".
+    public synchronized void fizz(Runnable printFizz) throws InterruptedException {
+        for(int i=1;i<=n;i++)
+        {
+            while(counter!=3)
+                wait();
+            if(i%3==0 && flag==0)
+            {
+                printFizz.run();
+                flag=1;
+            }
+            counter++;
+            notifyAll();
+        }
+    }
+
+    // printBuzz.run() outputs "buzz".
+    public synchronized void buzz(Runnable printBuzz) throws InterruptedException {
+        for(int i=1;i<=n;i++)
+        {
+            while(counter!=2)
+                wait();
+            if(i%5==0 && flag==0)
+            {
+                printBuzz.run();
+                flag=1;
+            }
+            counter++;
+            notifyAll();
+        }
+    }
+
+    // printFizzBuzz.run() outputs "fizzbuzz".
+    public synchronized void fizzbuzz(Runnable printFizzBuzz) throws InterruptedException {
+        for(int i=1;i<=n;i++)
+        {
+            while(counter!=1)
+                wait();
+            if(i%3==0 && i%5==0)
+            {
+                printFizzBuzz.run();
+                flag=1;
+            }
+            counter++;
+            notifyAll();
+        }
+    }
+
+    // printNumber.accept(x) outputs "x", where x is an integer.
+    public synchronized void number(IntConsumer printNumber) throws InterruptedException {
+        for(int i=1;i<=n;i++)
+        {
+        while(counter!=4)
+            wait();
+        if(flag==0)
+            printNumber.accept(i);
+        flag=0;
+        counter=1;
+        notifyAll();
+        }
+    }
+}
