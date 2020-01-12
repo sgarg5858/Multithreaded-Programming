@@ -1,0 +1,187 @@
+There are two ways to create a thread:
+  1.By extending Thread class
+  2.By implementing Runnable interface.
+
+In this we are extending thread class
+class Runner extends Thread{
+
+```
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.println(i);
+      try {
+				Thread.sleep(100);  // it sleeps thread for specified time as this method throws exception so surround it with try/catch block.
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner1=new Runner();
+		runner1.start();
+	}
+
+}
+
+```
+Output-0 1 2 3 4 5 6 7 8 9
+Above program has 2 call stack/threads one is main and second one is runner.
+Every thread has its own call stack and threads run independently.
+
+
+
+Example 2 when there are multiple threads:
+
+class Runner extends Thread{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner1=new Runner();
+		runner1.start();
+		
+		Runner runner2=new Runner();
+		runner2.start();
+	}
+
+}
+Output-0 0 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9
+In above program there are 3 threads/call stack one is main thread ,second is runner1 and third is runner2.
+And we can see that thread are running concurrently from their interleaved output.
+
+
+
+Example 3: when we directly call run() method from main main method
+
+class Runner extends Thread{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner1=new Runner();
+		runner1.run();
+		
+		Runner runner2=new Runner();
+		runner2.run();
+	}
+
+}
+Output- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+Note-If we call run() method instead of start() method in main class then Runner is going to execute in the main thread.It won't create new
+thread.There will be no context switching(won't run concurrently) as they will be treated as normal objects not thread objects.
+They won't have their different call stacks they will run in one main stack.That's why use start() method.
+
+
+Now we will use create thread by implementing runnable interface...
+
+
+Example 4:
+
+class Runners implements Runnable{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i+ " ");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThreadUsingRunnableInterface {
+
+	public static void main(String[] args) {
+		
+		Runners runner1=new Runners();
+	//	runner1.start();
+  runner1.run();
+		
+		Runners runner2=new Runners();
+	//	runner2.start();
+  runner2.run();
+	}
+
+}
+Output- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9
+If you are not extending Thread class your class object won't be considered as Thread object.Runnable doesn't have any start method
+So you need to explicitely create Thread class object
+We will pass the object of our class that implements Runnable so that your class run() method may execute.
+
+Example5:We will pass the object of class to thread class constructor
+
+
+class Runners implements Runnable{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i+ " ");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThreadUsingRunnableInterface {
+
+	public static void main(String[] args) {
+		
+		Runners runner1=new Runners();
+		Thread t1=new Thread(runner1);
+		t1.start();
+		
+		Runners runner2=new Runners();
+		Thread t2=new Thread(runner2);
+		t2.start();
+	}
+
+}
+
+Output:0 0 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 
+
+Now threads are running perfectly by passing them to thread class constructor when implementing runnable interface.
+
+
