@@ -1,0 +1,46 @@
+
+Implementing ThreadGroup
+
+
+class Runners implements Runnable{
+
+	@Override
+	public void run() {
+		System.out.println("Thread Group Name: "+Thread.currentThread().getThreadGroup().getName()
+				+"Thread Name: "+Thread.currentThread().getName());
+	}
+	
+}
+public class CreatingThreadUsingRunnableInterface {
+
+	public static void main(String[] args) {
+		Runners runner1=new Runners();
+		ThreadGroup tg1=new ThreadGroup("ParentThreadGroup");
+		
+		Thread t1=new Thread(tg1,runner1,"one");
+		Thread t2=new Thread(tg1,runner1,"two");
+		Thread t3=new Thread(tg1,runner1,"three");
+		t1.start();
+		t2.start();
+		t3.start();
+		
+		System.out.println("Thread Group Name: "+tg1.getName());
+		tg1.list();
+		
+		
+		}
+
+}
+Output:
+
+Thread Group Name: ParentThreadGroup
+
+java.lang.ThreadGroup[name=ParentThreadGroup,maxpri=10]
+    Thread Group Name: ParentThreadGroupThread Name: three
+Thread[one,5,ParentThreadGroup]
+    Thread[two,5,ParentThreadGroup]
+    Thread[three,5,ParentThreadGroup]
+    
+Thread Group Name: ParentThreadGroupThread Name: two
+Thread Group Name: ParentThreadGroupThread Name: one
+
