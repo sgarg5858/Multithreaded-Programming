@@ -1,0 +1,65 @@
+
+
+class Runner extends Thread{
+
+	@Override
+	public void run() {
+		System.out.println("Priority of thread" +Thread.currentThread().getName()+"is : "+ Thread.currentThread().getPriority());
+		for(int i=0;i<5;i++)
+		{
+			System.out.println(Thread.currentThread().getName() + " : " + i);
+		}
+		}
+	
+}
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner1=new Runner();
+		Runner runner2=new Runner();
+		Runner runner3=new Runner();
+		
+		
+		 System.out.println("Original priority of Thread-1: " + runner1.getPriority());
+         System.out.println("Original priority of Thread-2: " + runner2.getPriority());
+         System.out.println("Original priority of Thread-3: " + runner3.getPriority());
+         
+         runner1.setPriority(Thread.MIN_PRIORITY);
+         runner2.setPriority(3);
+         runner3.setPriority(Thread.MAX_PRIORITY);
+         
+         runner1.start();
+ 		 runner2.start();
+ 		runner3.start();
+
+		
+	}
+
+}
+
+Output:
+Original priority of Thread-1: 5
+Original priority of Thread-2: 5
+Original priority of Thread-3: 5
+Priority of threadThread-2is : 10
+Thread-2 : 0
+Thread-2 : 1
+Thread-2 : 2
+Thread-2 : 3
+Thread-2 : 4
+Priority of threadThread-1is : 3
+Thread-1 : 0
+Thread-1 : 1
+Thread-1 : 2
+Thread-1 : 3
+Thread-1 : 4
+Priority of threadThread-0is : 1
+Thread-0 : 0
+Thread-0 : 1
+Thread-0 : 2
+Thread-0 : 3
+Thread-0 : 4
+
+You can see in the output that the thread with the highest priority is executed first.
+But that may not always be the case and you may get different output too as the platform 
+Java is running on is also one of the factor as that platform may have a different implementation for multi-tasking.
