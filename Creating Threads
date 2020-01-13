@@ -185,3 +185,44 @@ Output:0 0 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9
 Now threads are running perfectly by passing them to thread class constructor when implementing runnable interface.
 
 
+Example 6:
+
+Can we start a thread twice?
+
+class Runners implements Runnable{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i+ " ");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThreadUsingRunnableInterface {
+
+	public static void main(String[] args) {
+		
+		Runners runner1=new Runners();
+		Thread t1=new Thread(runner1);
+		t1.start();
+		t1.start();
+		}
+
+}
+Output:
+0 Exception in thread "main" java.lang.IllegalThreadStateException
+	at java.base/java.lang.Thread.start(Thread.java:790)
+	at Threads.CreatingThreadUsingRunnableInterface.main(CreatingThreadUsingRunnableInterface.java:26)
+1 2 3 4 5 6 7 8 9 
+
+No after starting a thread it can never be started again it will IllegalThreadStateexception.
+In such case thread will run once but for the second time it will throw exception.
+
+
