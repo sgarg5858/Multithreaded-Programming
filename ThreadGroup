@@ -44,3 +44,60 @@ Thread[one,5,ParentThreadGroup]
 Thread Group Name: ParentThreadGroupThread Name: two
 Thread Group Name: ParentThreadGroupThread Name: one
 
+Creating ThreadGroup In ThreadGroup
+
+
+class Runners implements Runnable{
+
+	@Override
+	public void run() {
+		System.out.println("Thread Group Name: "+Thread.currentThread().getThreadGroup().getName()
+				+"  Thread Name: "+Thread.currentThread().getName());
+	}
+	
+}
+public class CreatingThreadUsingRunnableInterface {
+
+	public static void main(String[] args) {
+		Runners runner1=new Runners();
+		ThreadGroup tg1=new ThreadGroup("A");
+		ThreadGroup tg2 = new ThreadGroup (tg1, "B");
+		Thread t1=new Thread(tg1,runner1,"one");
+		Thread t2=new Thread(tg1,runner1,"two");
+		Thread t3=new Thread(tg2,runner1,"three");
+		Thread t4=new Thread(tg2,runner1,"four");
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+		
+		tg1.list();
+		tg2.list();
+		
+		
+		}
+
+}
+
+
+Output:
+
+java.lang.ThreadGroup[name=A,maxpri=10]
+    Thread[one,5,A]
+    Thread[two,5,A]
+    java.lang.ThreadGroup[name=B,maxpri=10]
+        Thread[three,5,B]
+        Thread[four,5,B]
+	
+java.lang.ThreadGroup[name=B,maxpri=10]
+    Thread[three,5,B]
+    Thread[four,5,B]
+    
+Thread Group Name: A  Thread Name: one
+Thread Group Name: B  Thread Name: four
+Thread Group Name: B  Thread Name: three
+Thread Group Name: A  Thread Name: two
+
+
+Clearly tg1.list();
+lists all its threads and threads of its subgroups
