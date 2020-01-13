@@ -1,0 +1,80 @@
+What does join method do?
+
+The join() method waits for a thread to die.
+In other words, it causes the currently running threads to stop executing until the thread it joins with completes its task.
+Let's see this with an example
+
+Example1: without using join method...
+
+
+class Runner extends Thread{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i+ " ");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner1=new Runner();
+		runner1.start();
+		
+		
+		Runner runner2=new Runner();
+		runner2.start();
+		
+		Runner runner3=new Runner();
+		runner3.start();
+	}
+
+}
+Output:0 0 0 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5 6 6 6 7 7 7 8 8 8 9 9 9 
+
+
+Example2: when we are using join method on runner1
+
+class Runner extends Thread{
+
+	@Override
+	public void run() {
+		for(int i=0;i<10;i++)
+		{
+			System.out.print(i+ " ");
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+}
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner1=new Runner();
+		runner1.start();
+		
+		try {
+			runner1.join();  // here we are using join method on runner1 so runner2 and runner 3 will wait until runner1 is executing.
+		} catch (InterruptedException e) {}
+		
+		Runner runner2=new Runner();
+		runner2.start();
+		
+		Runner runner3=new Runner();
+		runner3.start();
+	}
+
+}
+Output:0 1 2 3 4 5 6 7 8 9 0 0 1 1 2 2 3 3 4 4 5 5 6 6 7 7 8 8 9 9 
