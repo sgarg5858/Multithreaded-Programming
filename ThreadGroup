@@ -15,7 +15,7 @@ public class CreatingThreadUsingRunnableInterface {
 
 	public static void main(String[] args) {
 		Runners runner1=new Runners();
-		ThreadGroup tg1=new ThreadGroup("ParentThreadGroup");
+		ThreadGroup tg1=new ThreadGroup("ParentThreadGroup");//main group will be the parent of tg1.
 		
 		Thread t1=new Thread(tg1,runner1,"one");
 		Thread t2=new Thread(tg1,runner1,"two");
@@ -60,8 +60,8 @@ public class CreatingThreadUsingRunnableInterface {
 
 	public static void main(String[] args) {
 		Runners runner1=new Runners();
-		ThreadGroup tg1=new ThreadGroup("A");
-		ThreadGroup tg2 = new ThreadGroup (tg1, "B");
+		ThreadGroup tg1=new ThreadGroup("A"); //main group will be parent of tg1
+		ThreadGroup tg2 = new ThreadGroup (tg1, "B");//tg1 is parent of tg2
 		Thread t1=new Thread(tg1,runner1,"one");
 		Thread t2=new Thread(tg1,runner1,"two");
 		Thread t3=new Thread(tg2,runner1,"three");
