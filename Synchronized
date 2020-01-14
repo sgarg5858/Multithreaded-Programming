@@ -224,3 +224,220 @@ Output:1 Thread-0
 1 Thread-0
 
 It is interleaved output as object level lock will be only on synchornized methods other threads can call non-synchronized methods.
+
+STATIC SYNCHRONIZATION
+
+What happens when there are multiple objects of same class?
+
+But what about the scenario where you have more than one object of the same class. 
+In that case two separate threads can acquire locks of these two objects and enter the synchronized method 
+or synchronized block with those separate locks at the same time.
+If you don’t want that to happen then you need static synchronization in Java.
+
+As you must be knowing a variable or method marked as static in Java belongs to class instead of Object.
+Same way static synchronization in Java is also at the class level not at instance level.
+
+
+Example:
+
+
+class Runner{
+	synchronized public void  increment()
+	{
+		for(int i=1;i<=5;i++)
+		{
+			System.out.println(i+" "+Thread.currentThread().getName());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	synchronized public void decrement()
+	{
+		for(int i=5;i>=1;i--)
+		{
+			System.out.println(i+" "+Thread.currentThread().getName());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		Runner runner1=new Runner();
+		Thread t1=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.increment();
+			}
+		};
+		Thread t2=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.decrement();
+			}
+		};
+		Thread t3=new Thread() {
+			@Override
+			public void run()
+			{
+				runner1.increment();
+			}
+		};
+		Thread t4=new Thread() {
+			@Override
+			public void run()
+			{
+				runner1.decrement();
+			}
+		};
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+        
+	}
+
+}
+Output:
+5 Thread-1
+1 Thread-2
+2 Thread-2
+4 Thread-1
+3 Thread-2
+3 Thread-1
+2 Thread-1
+4 Thread-2
+5 Thread-2
+1 Thread-1
+5 Thread-3
+1 Thread-0
+4 Thread-3
+2 Thread-0
+3 Thread-3
+3 Thread-0
+2 Thread-3
+4 Thread-0
+1 Thread-3
+5 Thread-0
+
+
+Conclusion:
+As you can see from the output since thread-0 and thread-1 are synchronized on the same object runner so these two thread won’t interleave. 
+Same way thread-2 and thread-3 are synchronized on the same object runner1 so these two threads won’t interleave.
+But thread-2 can enter the synchronized method even when thread-0 has acquired a lock as they both have separate object locks of their own.
+
+Using Static Synchronization:
+
+class Runner{
+	public static synchronized void  increment()
+	{
+		for(int i=1;i<=5;i++)
+		{
+			System.out.println(i+" "+Thread.currentThread().getName());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	public static synchronized void decrement()
+	{
+		for(int i=5;i>=1;i--)
+		{
+			System.out.println(i+" "+Thread.currentThread().getName());
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		Runner runner1=new Runner();
+		Thread t1=new Thread() {
+			@Override
+			public void run()
+			{
+				Runner.increment();
+			}
+		};
+		Thread t2=new Thread() {
+			@Override
+			public void run()
+			{
+				Runner.decrement();
+			}
+		};
+		Thread t3=new Thread() {
+			@Override
+			public void run()
+			{
+				Runner.increment();
+			}
+		};
+		Thread t4=new Thread() {
+			@Override
+			public void run()
+			{
+				Runner.decrement();
+			}
+		};
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+        
+	}
+
+}
+
+Output:
+1 Thread-0
+2 Thread-0
+3 Thread-0
+4 Thread-0
+5 Thread-0
+5 Thread-1
+4 Thread-1
+3 Thread-1
+2 Thread-1
+1 Thread-1
+5 Thread-3
+4 Thread-3
+3 Thread-3
+2 Thread-3
+1 Thread-3
+1 Thread-2
+2 Thread-2
+3 Thread-2
+4 Thread-2
+5 Thread-2
+
+No threads are interleaving means class level lock...
