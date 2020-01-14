@@ -1,0 +1,98 @@
+What happens when we don't use synchronized keyword?
+
+class Runner{
+	public void increment()
+	{
+		for(int i=1;i<=5;i++)
+		{
+			System.out.print(i+" ");
+			
+		}
+	}
+	public void decrement()
+	{
+		for(int i=5;i>=1;i--)
+		{
+			System.out.print(i+" ");
+		}
+	}
+	
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		Thread t1=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.increment();
+			}
+		};
+		Thread t2=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.decrement();
+			}
+		};
+		t1.start();
+		t2.start();
+        
+	}
+
+}
+Output: 1 5 4 2 3 2 1 3 4 5 
+Output may varyon every execution as that depends on thread scheduler which thread to run.
+
+Now Let's use synchronized methods
+
+class Runner{
+	synchronized public void increment()
+	{
+		for(int i=1;i<=5;i++)
+		{
+			System.out.print(i+" ");
+			
+		}
+	}
+	synchronized public void decrement()
+	{
+		for(int i=5;i>=1;i--)
+		{
+			System.out.print(i+" ");
+		}
+	}
+	
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		Thread t1=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.increment();
+			}
+		};
+		Thread t2=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.decrement();
+			}
+		};
+		t1.start();
+		t2.start();
+        
+	}
+
+}
+Output:1 2 3 4 5 5 4 3 2 1 
+
+Here the methods are not gonna run in interleaving mode once any method has been called it will execute that method because
+every object has a lock associated with it and using synchronized keyword we can acquire the lock and the lock is at object level
+which means we can't call any other method until this current method is executed.
