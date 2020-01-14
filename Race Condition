@@ -1,0 +1,91 @@
+what is race condition?
+
+when two or more threads try to access a shared resource. 
+If all the threads are just reading a shared object that poses no problem but modifying or writing 
+a value may lead to incorrect results because of race condition.
+
+In a multi-threaded environment, a thread after executing few steps may be preempted by another thread.
+That may leave the shared data in an inconsistent state.
+
+package Threads;
+
+class Runner{
+	 int counter=0;
+	 public void  increment()
+	{
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		counter++;
+		System.out.print(counter+" ");
+	}
+
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		for(int i=1;i<=10;i++)
+		{
+			
+			Thread t=new Thread() {
+				@Override
+				public void run()
+				{
+					runner.increment();
+				}
+			};
+			t.start();
+		}		
+	}
+}
+Output:1 1 2 9 8 7 6 5 4 3 
+it may vary...
+
+How to avoid race condition ?
+Using synchronized..
+
+
+package Threads;
+
+class Runner{
+	 int counter=0;
+	synchronized public void  increment()
+	{
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		counter++;
+		System.out.print(counter+" ");
+	}
+
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		for(int i=1;i<=10;i++)
+		{
+			
+			Thread t=new Thread() {
+				@Override
+				public void run()
+				{
+					runner.increment();
+				}
+			};
+			t.start();
+		}
+			
+	}
+
+}
+Output:1 2 3 4 5 6 7 8 9 10 
