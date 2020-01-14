@@ -96,3 +96,54 @@ Output:1 2 3 4 5 5 4 3 2 1
 Here the methods are not gonna run in interleaving mode once any method has been called it will execute that method because
 every object has a lock associated with it and using synchronized keyword we can acquire the lock and the lock is at object level
 which means we can't call any other method until this current method is executed.
+
+
+class Runner{
+	synchronized public void increment()
+	{
+		for(int i=1;i<=5;i++)
+		{
+			System.out.print(i+" ");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	synchronized public void decrement()
+	{
+		for(int i=5;i>=1;i--)
+		{
+			System.out.print(i+" ");
+		}
+	}
+	
+}
+
+public class CreatingThread {
+
+	public static void main(String[] args) {
+		Runner runner=new Runner();
+		Thread t1=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.increment();
+			}
+		};
+		Thread t2=new Thread() {
+			@Override
+			public void run()
+			{
+				runner.decrement();
+			}
+		};
+		t1.start();
+		t2.start();
+        
+	}
+Output:1 2 3 4 5 5 4 3 2 1  
+Output will be same even if we sleep the thread it will lock all the methods as lock is at object level.
