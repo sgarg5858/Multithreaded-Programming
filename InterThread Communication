@@ -1,0 +1,92 @@
+InterThread Communication using wait(),notify(),notifyAll()
+
+The best way to understand above methods in practice is by implementing producer-consumer by 2 threads.
+
+package Threads;
+
+import java.util.ArrayList;
+import java.util.List;
+
+class ProduceMsg implements Runnable{
+	List<String> msgObj;
+	
+    ProduceMsg(List<String> msgObj){
+        this.msgObj = msgObj;
+    }
+	@Override
+	public void run() {
+		for(int i=0;i<5;i++)
+		{
+			synchronized(msgObj)
+			{
+				while(msgObj.size()>=1)
+				{
+					try {
+						msgObj.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				msgObj.add("Hello-"+i);
+				System.out.println("adding to list:"+msgObj.get(0));
+				msgObj.notify();
+			}
+		}
+	}
+	
+}
+class ConsumerMsg implements Runnable{
+	List<String> msgObj;
+	
+	ConsumerMsg(List<String> msgObj){
+        this.msgObj = msgObj;
+    }
+	@Override
+	public void run() {
+		for(int i=0;i<5;i++)
+		{
+			synchronized(msgObj)
+			{
+				while(msgObj.size()<1)
+				{
+					try {
+						msgObj.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				System.out.println("consuming from list:"+msgObj.get(0));
+				msgObj.remove(0);
+				msgObj.notify();
+			}
+		}
+	}
+	
+}
+public class InterThread {
+
+	public static void main(String[] args) {
+		List<String>msgObj=new ArrayList<>();
+		//producer thread
+		Thread t1=new Thread(new ProduceMsg(msgObj));
+		//consumer thread
+		Thread t2=new Thread(new ConsumerMsg(msgObj));
+		t1.start();
+		t2.start();
+		
+	}
+
+}
+Output:
+adding to list:Hello-0
+consuming from list:Hello-0
+adding to list:Hello-1
+consuming from list:Hello-1
+adding to list:Hello-2
+consuming from list:Hello-2
+adding to list:Hello-3
+consuming from list:Hello-3
+adding to list:Hello-4
+consuming from list:Hello-4
+
+If we don't use wait()/notify() methods then it wouldn't be possible to synchronize.
