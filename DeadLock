@@ -1,0 +1,128 @@
+ when one thread is waiting for a resource that is locked by another thread, 
+ which in turn is waiting for another thread and so on until this dependency loops back to the first waiting thread. 
+ Thus all the threads are waiting for each other to release the resources to make any further progress and 
+ blocked forever in the process. This scenario is called deadlock in multi-threading.
+
+Scenarios when deadlock may happen are as follows.
+
+1.Nested synchronized blocks with reverse ordering of objects.
+2.Calling one synchronized method from another where methods are not using the same object to synchronize.
+
+
+package Threads;
+
+class ThreadA implements Runnable{
+    private Object obj1;
+    private Object obj2;
+    ThreadA(Object obj1, Object obj2){
+        this.obj1 = obj1;
+        this.obj2 = obj2;
+    }
+    @Override
+    public void run() {
+        synchronized(obj1){
+            System.out.println(Thread.currentThread().getName() + " acquired " + "obj1 lock");
+            synchronized(obj2){
+                System.out.println(Thread.currentThread().getName() + " acquired " + "obj2 lock");
+            }
+        }       
+    }  
+}
+ 
+class ThreadB implements Runnable{
+    private Object obj1;
+    private Object obj2;
+    ThreadB(Object obj1, Object obj2){
+        this.obj1 = obj1;
+        this.obj2 = obj2;
+    }
+    @Override
+    public void run() {
+        synchronized(obj2){
+            System.out.println(Thread.currentThread().getName() + " acquired " + "obj2 lock");
+            synchronized(obj1){
+                 System.out.println(Thread.currentThread().getName() + " acquired " + "obj1 lock");
+            }
+        }   
+    }
+}
+ 
+public class CreatingThread{
+ 
+    public static void main(String[] args) {
+        Object obj1 = new Object();
+        Object obj2 = new Object();
+        Thread t1 = new Thread(new ThreadA(obj1, obj2));
+        Thread t2 = new Thread(new ThreadB(obj1, obj2));
+        t1.start();
+        t2.start();
+    }
+}
+Output:
+
+2
+Thread-0 acquired obj1 lock
+Thread-1 acquired obj2 lock
+
+Explanation:
+In ThreadA’s run method synchronization is first done on obj1 and later on obj2. 
+In ThreadB’s run method synchronization is reversed, it is first done on obj2 and later on obj1. 
+That may result in a deadlock where t1 gets a lock on obj1 and waiting to acquire a lock on obj2.
+At the same time t2 has acquired a lock on obj2 and waiting to acquired a lock on obj1.
+
+Case 2:
+
+package Threads;
+
+ 
+public class CreatingThread{
+	public synchronized void method1(CreatingThread obj){
+        System.out.println(Thread.currentThread().getName() + " In Method1");
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        //Calling another synchronized method
+        obj.method2(this);
+     }
+              
+     public synchronized void method2(CreatingThread obj2){
+         System.out.println("In Method2");
+     }
+    public static void main(String[] args) {
+    	
+    	CreatingThread ct1=new CreatingThread();
+    	CreatingThread ct2=new CreatingThread();
+    	Thread t1=new Thread() {
+    		@Override
+    		public void run()
+    		{
+    			ct1.method1(ct2);
+    		}
+    	};
+    	Thread t2=new Thread() {
+    		@Override
+    		public void run()
+    		{
+    			ct2.method1(ct1);
+    		}
+    	};
+    	t1.start();
+    	t2.start();
+
+        
+    }
+}
+Output:
+
+1
+2
+Thread-0 In Method1
+Thread-1 In Method1
+
+In the code there are two instances of CreatingThread class, one thread calls the synchronized method method1 using obj1 
+and another thread calls it using obj2.Which means Thread1 holds a lock on obj1 and Thread2 holds a lock on obj2.
+With in the synchronized method method1 there is a call to another synchronized method method2, 
+both of the threads are trying to call method2 with the object whose lock is held by another object thus leading to a deadlock.
