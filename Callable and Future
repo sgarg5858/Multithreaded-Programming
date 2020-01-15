@@ -51,3 +51,75 @@ getting result:Valuea:tWed Jan 15 15:26:17 IST 2020
 
 from output it is clear that code execution doesn't wait for result from callable interface but goes on and the result from callable
 will be returned in the future but don't know when so Future interace has been defined for this.
+
+
+*****************************************************************
+
+
+Now what we will do is we make thread pool of 2 thread using executorservice and then call 4 callable tasks..
+
+public class CallableDemo {
+	 
+    public static void main(String[] args) {
+        // Pool of 2 threads
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        System.out.println("Submitting callable tasks " + new Date());
+        Future<String> f1 = executor.submit(new MyCallable("Callable task-1"));
+        Future<String> f2 = executor.submit(new MyCallable("Callable task-2"));
+        Future<String> f3 = executor.submit(new MyCallable("Callable task-3"));
+        Future<String> f4 = executor.submit(new MyCallable("Callable task-4"));
+        System.out.println("Submitted callable task " + new Date());
+        
+        
+        // getting result 
+        try {
+            // Calling get() method to get the future value
+            System.out.println("Value for task-1 " + f1.get() + " at " + new Date());
+            System.out.println("Value for task-2 " + f2.get() + " at " + new Date());
+            while(!f3.isDone()) {
+                System.out.println("Waiting for task-3 to complete " + f2.get());
+                TimeUnit.MILLISECONDS.sleep(500);
+            }
+            System.out.println("Value for task-3 after it is completed " + f3.get() + " at " + new Date());
+            System.out.println("Value for task-4 " + f4.get() + " at " + new Date());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        executor.shutdown();
+    }
+}
+ 
+ 
+class MyCallable implements Callable<String> {
+   String str;
+   MyCallable(String str){
+       this.str = str;
+   }
+   @Override
+   public String call() throws Exception {
+       System.out.println("In call method, thread name- " + Thread.currentThread().getName());
+       TimeUnit.SECONDS.sleep(2);
+       return str;
+   }
+   
+}
+
+Ouput:
+Submitting callable tasks Wed Jan 15 15:49:31 IST 2020
+Submitted callable task Wed Jan 15 15:49:31 IST 2020
+In call method, thread name- pool-1-thread-2
+In call method, thread name- pool-1-thread-1
+In call method, thread name- pool-1-thread-2
+In call method, thread name- pool-1-thread-1
+Value for task-1 Callable task-1 at Wed Jan 15 15:49:33 IST 2020
+Value for task-2 Callable task-2 at Wed Jan 15 15:49:33 IST 2020
+Waiting for task-3 to complete Callable task-2
+Waiting for task-3 to complete Callable task-2
+Waiting for task-3 to complete Callable task-2
+Waiting for task-3 to complete Callable task-2
+Value for task-3 after it is completed Callable task-3 at Wed Jan 15 15:49:35 IST 2020
+Value for task-4 Callable task-4 at Wed Jan 15 15:49:35 IST 2020
