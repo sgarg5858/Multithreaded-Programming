@@ -1,0 +1,116 @@
+Let's what happens when we use multiple threads to insert values in HashMap...
+
+package Threads;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class ConcurrentMap implements Runnable {
+	 Map<String,Integer> testmap;
+	 public ConcurrentMap(Map<String,Integer> testmap)
+	 {
+		 this.testmap=testmap;
+	 }
+	public static void main(String[] args) {
+		Map<String,Integer> testmap=new HashMap<>();
+		Thread t1=new Thread(new ConcurrentMap(testmap));
+		Thread t2=new Thread(new ConcurrentMap(testmap));
+		Thread t3=new Thread(new ConcurrentMap(testmap));
+		Thread t4=new Thread(new ConcurrentMap(testmap));
+		
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+		try {
+			t1.join();
+			t2.join();
+			t3.join();
+			t4.join();
+		} catch (InterruptedException e) {
+		}
+		
+		System.out.println("Size Of Map is: "+testmap.size());
+	}
+
+	@Override
+	public void run() {
+		System.out.println(Thread.currentThread().getName());
+		String str=Thread.currentThread().getName();
+		for(int i=1;i<=100;i++)
+		{
+			testmap.put(str+i,i);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
+Ouput:
+Thread-0
+Thread-1
+Thread-3
+Thread-2
+Size Of Map is: 341
+
+Expected Size is 400
+
+Using ConcurrentHashMap eliminates such inconsistencies.
+
+package Threads;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ConcurrentMap implements Runnable {
+	 Map<String,Integer> testmap;
+	 public ConcurrentMap(Map<String,Integer> testmap)
+	 {
+		 this.testmap=testmap;
+	 }
+	public static void main(String[] args) {
+		Map<String,Integer> testmap=new ConcurrentHashMap<>();
+		Thread t1=new Thread(new ConcurrentMap(testmap));
+		Thread t2=new Thread(new ConcurrentMap(testmap));
+		Thread t3=new Thread(new ConcurrentMap(testmap));
+		Thread t4=new Thread(new ConcurrentMap(testmap));
+		
+		t1.start();
+		t2.start();
+		t3.start();
+		t4.start();
+		try {
+			t1.join();
+			t2.join();
+			t3.join();
+			t4.join();
+		} catch (InterruptedException e) {
+		}
+		
+		System.out.println("Size Of Map is: "+testmap.size());
+	}
+
+	@Override
+	public void run() {
+		System.out.println(Thread.currentThread().getName());
+		String str=Thread.currentThread().getName();
+		for(int i=1;i<=100;i++)
+		{
+			testmap.put(str+i,i);
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+}
+Output:
+Thread-0
+Thread-1
+Thread-3
+Thread-2
+Size Of Map is: 400
+
+Size will always be 400.
