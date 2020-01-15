@@ -1,0 +1,53 @@
+1.Consider a scenario where you have a big computation and you want to split it into multiple sub-tasks which are executed 
+by multiple threads with each thread working on a part of the task.
+Once all the threads are finished with their tasks you can combine the partial results to get the result of the computation.
+2.Designing this scenario with Runnable makes it difficult as Runnable doesn’t return a result. 
+That shortcoming is filled by Callable in Java as it can return a result and may throw an exception.
+
+Callable interface in Java has a single method call which computes a result and returns it or throws an exception if unable to do so.
+
+So, you need to implement call() method to provide the task that has to be implemented by a thread as an asynchronous computation. 
+
+package ExecuterServiceDemo;
+
+import java.util.Date;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+public class CallableDemo {
+
+	public static void main(String[] args) {
+		ExecutorService executor=Executors.newSingleThreadExecutor();
+		Date date=new Date();
+		System.out.println("Time before task:"+date);
+		Future<String>future=executor.submit(()->{
+			TimeUnit.SECONDS.sleep(15);
+			return "Value";
+		});
+		System.out.println("Time After submitting task:"+new Date());
+		
+		try {
+			System.out.println("getting result:"+future.get()+"a:t"+new Date());
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		executor.shutdown();
+
+	}
+
+}
+
+Output:
+Time before task:Wed Jan 15 15:26:02 IST 2020
+Time After submitting task:Wed Jan 15 15:26:02 IST 2020
+getting result:Valuea:tWed Jan 15 15:26:17 IST 2020
+
+from output it is clear that code execution doesn't wait for result from callable interface but goes on and the result from callable
+will be returned in the future but don't know when so Future interace has been defined for this.
